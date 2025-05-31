@@ -1,38 +1,937 @@
 <!DOCTYPE html>
+
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>퍼스널 퍼퓸 - 에니어그램 향수 테스트</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Noto Sans KR', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      animation: fadeInUp 0.8s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
+      letter-spacing: -1px;
+    }
+
+    .subtitle {
+      color: #666;
+      font-size: 1.1rem;
+      margin-bottom: 30px;
+      font-weight: 400;
+    }
+
+    .question-container {
+      margin-bottom: 30px;
+      text-align: left;
+    }
+
+    .question {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .option {
+      background: linear-gradient(135deg, #f8f9ff, #e8edff);
+      border: 2px solid transparent;
+      border-radius: 16px;
+      padding: 18px 24px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+      text-align: left;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .option::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      transition: left 0.5s;
+    }
+
+    .option:hover::before {
+      left: 100%;
+    }
+
+    .option:hover {
+      border-color: #667eea;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+    }
+
+    .option.selected {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border-color: #667eea;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+      gap: 15px;
+    }
+
+    .btn {
+      padding: 14px 28px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-width: 120px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-secondary {
+      background: #f8f9ff;
+      color: #667eea;
+      border: 2px solid #667eea;
+    }
+
+    .btn-secondary:hover {
+      background: #667eea;
+      color: white;
+    }
+
+    .progress {
+      width: 100%;
+      height: 6px;
+      background: #e0e7ff;
+      border-radius: 3px;
+      margin-bottom: 30px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border-radius: 3px;
+      transition: width 0.5s ease;
+    }
+
+    .result-card {
+      text-align: center;
+      animation: zoomIn 0.8s ease-out;
+    }
+
+    @keyframes zoomIn {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .perfume-image {
+      width: 200px;
+      height: 250px;
+      margin: 0 auto 30px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    }
+
+    .perfume-bottle {
+      width: 80px;
+      height: 120px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 8px 8px 15px 15px;
+      position: relative;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .perfume-cap {
+      width: 40px;
+      height: 25px;
+      background: #333;
+      border-radius: 6px 6px 0 0;
+      position: absolute;
+      top: -25px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .perfume-label {
+      position: absolute;
+      top: 30px;
+      width: 100%;
+      height: 40px;
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+    }
+
+    .result-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .result-type {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .result-description {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: #555;
+      margin-bottom: 30px;
+    }
+
+    .perfume-notes {
+      background: #f8f9ff;
+      padding: 20px;
+      border-radius: 16px;
+      margin-bottom: 30px;
+    }
+
+    .notes-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .notes-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .note-tag {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .share-section {
+      margin-top: 30px;
+      padding-top: 30px;
+      border-top: 1px solid #eee;
+    }
+
+    .share-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .name-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e0e7ff;
+      border-radius: 12px;
+      font-size: 1rem;
+      margin-bottom: 15px;
+      transition: border-color 0.3s ease;
+    }
+
+    .name-input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .floating-particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 50%;
+      animation: float 6s infinite linear;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100px) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+      .card {
+        padding: 25px;
+      }
+      .title {
+        font-size: 2rem;
+      }
+      .question {
+        font-size: 1.1rem;
+      }
+    }
+  </style>
 </head>
+
 <body>
-  <div id="intro-screen">
-    <h1>퍼스널 퍼퓸</h1>
-    <p>에니어그램 기반 향수 추천 테스트</p>
-    <button id="start-btn">테스트 시작하기</button>
-  </div>
+    <div class="floating-particles"></div>
+    
+    <div class="container">
+        <div class="card">
+            <div id="intro-screen">
+                <h1 class="title">퍼스널 퍼퓸</h1>
+                <p class="subtitle">에니어그램 기반 향수 추천 테스트</p>
+                <p style="color: #666; margin-bottom: 30px; line-height: 1.6;">
+                    당신의 성격 유형에 맞는 완벽한 향수를 찾아보세요.<br>
+                    간단한 질문들을 통해 당신만의 시그니처 향을 추천해드립니다.
+                </p>
+                <button class="btn btn-primary" onclick="startTest()">테스트 시작하기</button>
+            </div>
 
-  <div id="test-screen" class="hidden">
-    <div class="progress">
-      <div class="progress-bar" id="progress-bar"></div>
+            <div id="test-screen" class="hidden">
+                <div class="progress">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+                
+                <div class="question-container">
+                    <h2 class="question" id="question-text"></h2>
+                    <div class="options" id="options-container"></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" id="prev-btn" onclick="previousQuestion()" disabled>이전</button>
+                    <button class="btn btn-primary" id="next-btn" onclick="nextQuestion()" disabled>다음</button>
+                </div>
+            </div>
+
+            <div id="result-screen" class="hidden">
+                <div class="result-card">
+                    <div class="perfume-image" id="perfume-image">
+                        <div class="perfume-bottle">
+                            <div class="perfume-cap"></div>
+                            <div class="perfume-label"></div>
+                        </div>
+                    </div>
+                    
+                    <h2 class="result-title" id="result-title"></h2>
+                    <h3 class="result-type" id="result-type"></h3>
+                    <p class="result-description" id="result-description"></p>
+                    
+                    <div class="perfume-notes">
+                        <h4 class="notes-title">추천 향수 노트</h4>
+                        <div class="notes-list" id="notes-list"></div>
+                    </div>
+
+                    <div class="share-section">
+                        <h4 class="share-title">결과 저장하기 (선택사항)</h4>
+                        <input type="text" class="name-input" id="user-name" placeholder="이름을 입력해주세요">
+                        <button class="btn btn-primary" onclick="saveResult()">결과 저장</button>
+                        <button class="btn btn-secondary" onclick="restartTest()" style="margin-left: 10px;">다시 테스트</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <h2 id="question-text"></h2>
-    <div id="options-container"></div>
-    <button id="prev-btn" disabled>이전</button>
-    <button id="next-btn" disabled>다음</button>
-  </div>
 
-  <div id="result-screen" class="hidden">
-    <h2 id="result-title"></h2>
-    <h3 id="result-type"></h3>
-    <p id="result-description"></p>
-    <div id="notes-list"></div>
-    <input id="user-name" placeholder="이름 입력"/>
-    <button id="save-btn">결과 저장</button>
-    <button id="restart-btn">다시 테스트</button>
-  </div>
+    <script>
+        // 테스트 데이터
+        const questions = [
+            {
+                text: "스트레스를 받을 때 당신의 반응은?",
+                options: [
+                    { text: "완벽하게 해결하려고 노력한다", weights: {1: 3} },
+                    { text: "도움을 주어 문제를 해결한다", weights: {2: 3} },
+                    { text: "성공적으로 극복해낸다", weights: {3: 3} },
+                    { text: "독특한 방식으로 표현한다", weights: {4: 3} },
+                    { text: "혼자만의 시간을 갖는다", weights: {5: 3} },
+                    { text: "안전한 방법을 찾는다", weights: {6: 3} },
+                    { text: "새로운 활동으로 전환한다", weights: {7: 3} },
+                    { text: "강력하게 대응한다", weights: {8: 3} },
+                    { text: "평화롭게 해결하려 한다", weights: {9: 3} }
+                ]
+            },
+            {
+                text: "사람들과의 관계에서 가장 중요하게 생각하는 것은?",
+                options: [
+                    { text: "정직하고 올바른 관계", weights: {1: 2, 9: 1} },
+                    { text: "따뜻하고 도움이 되는 관계", weights: {2: 2, 1: 1} },
+                    { text: "성공을 함께 나누는 관계", weights: {3: 2, 2: 1} },
+                    { text: "깊이 있고 진정성 있는 관계", weights: {4: 2, 3: 1} },
+                    { text: "개인적 공간을 존중하는 관계", weights: {5: 2, 4: 1} },
+                    { text: "신뢰할 수 있는 안전한 관계", weights: {6: 2, 5: 1} },
+                    { text: "재미있고 활기찬 관계", weights: {7: 2, 6: 1} },
+                    { text: "솔직하고 직접적인 관계", weights: {8: 2, 7: 1} },
+                    { text: "편안하고 평화로운 관계", weights: {9: 2, 8: 1} }
+                ]
+            },
+            {
+                text: "새로운 환경에 적응할 때 당신의 모습은?",
+                options: [
+                    { text: "체계적으로 계획을 세운다", weights: {1: 2, 2: 1} },
+                    { text: "다른 사람들과 친해지려 노력한다", weights: {2: 2, 3: 1} },
+                    { text: "빠르게 성과를 내려고 한다", weights: {3: 2, 4: 1} },
+                    { text: "나만의 특별한 공간을 만든다", weights: {4: 2, 5: 1} },
+                    { text: "충분히 관찰하고 분석한다", weights: {5: 2, 6: 1} },
+                    { text: "안전한 기반을 먼저 확보한다", weights: {6: 2, 7: 1} },
+                    { text: "다양한 가능성을 탐색한다", weights: {7: 2, 8: 1} },
+                    { text: "주도적으로 상황을 이끈다", weights: {8: 2, 9: 1} },
+                    { text: "자연스럽게 흘러가는 대로 한다", weights: {9: 2, 1: 1} }
+                ]
+            },
+            {
+                text: "가장 끌리는 향의 특성은?",
+                options: [
+                    { text: "깔끔하고 정제된 향", weights: {1: 2} },
+                    { text: "따뜻하고 포근한 향", weights: {2: 2} },
+                    { text: "세련되고 매력적인 향", weights: {3: 2} },
+                    { text: "독특하고 개성적인 향", weights: {4: 2} },
+                    { text: "미니멀하고 지적인 향", weights: {5: 2} },
+                    { text: "편안하고 안정적인 향", weights: {6: 2} },
+                    { text: "상큼하고 활기찬 향", weights: {7: 2} },
+                    { text: "강렬하고 임팩트 있는 향", weights: {8: 2} },
+                    { text: "자연스럽고 부드러운 향", weights: {9: 2} }
+                ]
+            },
+            {
+                text: "당신이 추구하는 삶의 가치는?",
+                options: [
+                    { text: "완벽함과 올바름", weights: {1: 3} },
+                    { text: "사랑과 연결", weights: {2: 3} },
+                    { text: "성취와 인정", weights: {3: 3} },
+                    { text: "진정성과 의미", weights: {4: 3} },
+                    { text: "지식과 이해", weights: {5: 3} },
+                    { text: "안전과 충성", weights: {6: 3} },
+                    { text: "자유와 모험", weights: {7: 3} },
+                    { text: "힘과 독립", weights: {8: 3} },
+                    { text: "평화와 조화", weights: {9: 3} }
+                ]
+            }
+        ];
 
-  <script type="module" src="main.js"></script>
+        // 결과 데이터
+        const results = {
+            "1w9": {
+                title: "완벽한 조화",
+                type: "개혁가 (평화로운 날개)",
+                description: "당신은 완벽함을 추구하면서도 평화를 사랑하는 성격입니다. 질서정연하면서도 부드러운 매력을 가지고 있어요.",
+                notes: ["베르가못", "라벤더", "화이트 머스크", "시더우드"],
+                colors: ["#4a90e2", "#7bb3f0"],
+                image: "clean-elegant"
+            },
+            "1w2": {
+                title: "따뜻한 완벽주의",
+                type: "개혁가 (도움주는 날개)",
+                description: "높은 기준을 가지면서도 타인을 돕는 것을 중요시하는 당신. 정의롭고 따뜻한 마음을 가지고 있습니다.",
+                notes: ["로즈", "제라늄", "샌달우드", "바닐라"],
+                colors: ["#e74c3c", "#f39c12"],
+                image: "warm-refined"
+            },
+            "2w1": {
+                title: "체계적 돌봄",
+                type: "조력가 (완벽주의 날개)",
+                description: "다른 사람을 돕는 것을 좋아하면서도 체계적이고 원칙적인 면을 가진 당신은 신뢰할 수 있는 존재입니다.",
+                notes: ["피오니", "프리지아", "화이트 티", "머스크"],
+                colors: ["#ff6b9d", "#ffa8cc"],
+                image: "nurturing-clean"
+            },
+            "2w3": {
+                title: "매력적 조력자",
+                type: "조력가 (성취자 날개)",
+                description: "타인을 돕는 것을 좋아하면서도 성공과 인정을 추구하는 당신. 사교적이고 매력적인 성격을 가지고 있어요.",
+                notes: ["재스민", "일랑일랑", "앰버", "바닐라"],
+                colors: ["#f39c12", "#e67e22"],
+                image: "charming-warm"
+            },
+            "3w2": {
+                title: "사교적 성취자",
+                type: "성취자 (돕는 날개)",
+                description: "성공을 추구하면서도 다른 사람들과의 관계를 중요시하는 당신. 카리스마 있고 인기가 많은 타입이에요.",
+                notes: ["시트러스", "로즈우드", "패츌리", "앰버"],
+                colors: ["#3498db", "#2980b9"],
+                image: "successful-social"
+            },
+            "3w4": {
+                title: "독창적 성취자",
+                type: "성취자 (예술가 날개)",
+                description: "성공을 추구하면서도 개성과 창의성을 중요시하는 당신. 세련되고 독특한 매력을 가지고 있습니다.",
+                notes: ["베르가못", "아이리스", "오우드", "바닐라"],
+                colors: ["#9b59b6", "#8e44ad"],
+                image: "creative-elegant"
+            },
+            "4w3": {
+                title: "야심찬 예술가",
+                type: "개인주의자 (성취 날개)",
+                description: "독특함을 추구하면서도 성공과 인정을 원하는 당신. 창의적이면서도 드라마틱한 매력을 가지고 있어요.",
+                notes: ["장미", "오키드", "패츌리", "바닐라"],
+                colors: ["#e74c3c", "#c0392b"],
+                image: "dramatic-luxury"
+            },
+            "4w5": {
+                title: "내성적 예술가",
+                type: "개인주의자 (사색가 날개)",
+                description: "깊이 있는 감성과 독창성을 추구하는 당신. 신비롭고 지적인 매력을 가진 독특한 존재입니다.",
+                notes: ["라벤더", "아이리스", "시더", "인센스"],
+                colors: ["#6c5ce7", "#a29bfe"],
+                image: "mysterious-deep"
+            },
+            "5w4": {
+                title: "창조적 사색가",
+                type: "사색가 (예술가 날개)",
+                description: "지식을 추구하면서도 창의성과 개성을 중요시하는 당신. 독립적이면서도 예술적인 감각을 가지고 있어요.",
+                notes: ["베르가못", "바이올렛", "시더우드", "머스크"],
+                colors: ["#00cec9", "#55a3ff"],
+                image: "intellectual-creative"
+            },
+            "5w6": {
+                title: "신중한 사색가",
+                type: "사색가 (충실가 날개)",
+                description: "깊이 있는 사고를 하면서도 안전과 충실함을 중요시하는 당신. 신중하고 분석적인 성격을 가지고 있습니다.",
+                notes: ["유칼립투스", "민트", "삼나무", "화이트 머스크"],
+                colors: ["#74b9ff", "#0984e3"],
+                image: "analytical-calm"
+            },
+            "6w5": {
+                title: "지적 충성가",
+                type: "충실가 (사색가 날개)",
+                description: "안전을 추구하면서도 지식과 이해를 중요시하는 당신. 신중하고 책임감 있는 성격을 가지고 있어요.",
+                notes: ["라벤더", "카모마일", "샌달우드", "머스크"],
+                colors: ["#6c5ce7", "#a29bfe"],
+                image: "trustworthy-wise"
+            },
+            "6w7": {
+                title: "활발한 충성가",
+                type: "충실가 (열정가 날개)",
+                description: "안전을 중시하면서도 즐거움과 모험을 추구하는 당신. 사교적이고 충성스러운 성격을 가지고 있습니다.",
+                notes: ["시트러스", "레몬그라스", "진저", "화이트 머스크"],
+                colors: ["#00b894", "#00cec9"],
+                image: "loyal-energetic"
+            },
+            "7w6": {
+                title: "책임감 있는 모험가",
+                type: "열정가 (충실가 날개)",
+                description: "즐거움을 추구하면서도 책임감과 충성심을 가진 당신. 활발하면서도 신뢰할 수 있는 성격이에요.",
+                notes: ["오렌지", "베르가못", "로즈마리", "시더"],
+                colors: ["#fdcb6e", "#e17055"],
+                image: "fun-reliable"
+            },
+            "7w8": {
+                title: "강력한 모험가",
+                type: "열정가 (도전자 날개)",
+                description: "자유와 즐거움을 추구하면서도 강인함을 가진 당신. 역동적이고 카리스마 넘치는 성격을 가지고 있어요.",
+                notes: ["자몽", "후추", "파촐리", "앰버"],
+                colors: ["#fd79a8", "#e84393"],
+                image: "dynamic-bold"
+            },
+            "8w7": {
+                title: "열정적 도전자",
+                type: "도전자 (열정가 날개)",
+                description: "강력함을 추구하면서도 즐거움과 자유를 사랑하는 당신. 에너지 넘치고 대담한 성격을 가지고 있습니다.",
+                notes: ["스파이시 노트", "시나몬", "바닐라", "머스크"],
+                colors: ["#e17055", "#d63031"],
+                image: "powerful-vibrant"
+            },
+            "8w9": {
+                title: "평화로운 도전자",
+                type: "도전자 (중재자 날개)",
+                description: "강인함을 가지면서도 평화를 추구하는 당신. 침착하고 균형 잡힌 리더십을 가지고 있어요.",
+                notes: ["샌달우드", "베티버", "패츨리", "앰버"],
+                colors: ["#00b894", "#00a085"],
+                image: "strong-balanced"
+            },
+            "9w8": {
+                title: "강인한 평화주의자",
+                type: "중재자 (도전자 날개)",
+                description: "평화를 추구하면서도 필요할 때 강인함을 보이는 당신. 자연스럽고 든든한 존재감을 가지고 있어요.",
+                notes: ["우디 노트", "시더", "바닐라", "머스크"],
+                colors: ["#00b894", "#55a3ff"],
+                image: "peaceful-strong"
+            },
+            "9w1": {
+                title: "완벽한 평화주의자",
+                type: "중재자 (개혁가 날개)",
+                description: "평화를 사랑하면서도 완벽함을 추구하는 당신. 조화롭고 균형 잡힌 성격을 가지고 있습니다.",
+                notes: ["화이트 플라워", "라벤더", "화이트 머스크", "시더"],
+                colors: ["#74b9ff", "#a29bfe"],
+                image: "harmonious-pure"
+            }
+        };
+
+        // 테스트 상태
+        let currentQuestion = 0;
+        let answers = [];
+        let scores = {};
+
+        // 초기화
+        function init() {
+            for (let i = 1; i <= 9; i++) {
+                scores[i] = 0;
+            }
+            createFloatingParticles();
+        }
+
+        // 플로팅 파티클 생성
+        function createFloatingParticles() {
+            const particlesContainer = document.querySelector('.floating-particles');
+            
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 4) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // 테스트 시작
+        function startTest() {
+            document.getElementById('intro-screen').classList.add('hidden');
+            document.getElementById('test-screen').classList.remove('hidden');
+            showQuestion();
+        }
+
+        // 질문 표시
+        function showQuestion() {
+            const question = questions[currentQuestion];
+            document.getElementById('question-text').textContent = question.text;
+            
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option';
+                optionDiv.textContent = option.text;
+                optionDiv.onclick = () => selectOption(index);
+                optionsContainer.appendChild(optionDiv);
+            });
+            
+            updateProgress();
+            updateNavigationButtons();
+        }
+
+        // 옵션 선택
+        function selectOption(optionIndex) {
+            // 이전 선택 제거
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            
+            // 현재 선택 표시
+            document.querySelectorAll('.option')[optionIndex].classList.add('selected');
+            
+            // 답변 저장
+            answers[currentQuestion] = optionIndex;
+            
+            // 다음 버튼 활성화
+            document.getElementById('next-btn').disabled = false;
+        }
+
+        // 다음 질문
+        function nextQuestion() {
+            if (answers[currentQuestion] === undefined) return;
+            
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                showQuestion();
+            } else {
+                calculateResult();
+            }
+        }
+
+        // 이전 질문
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion();
+                
+                // 이전 답변이 있다면 선택 상태 복원
+                if (answers[currentQuestion] !== undefined) {
+                    document.querySelectorAll('.option')[answers[currentQuestion]].classList.add('selected');
+                    document.getElementById('next-btn').disabled = false;
+                }
+            }
+        }
+
+        // 진행률 업데이트
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progress-bar').style.width = progress + '%';
+        }
+
+        // 네비게이션 버튼 업데이트
+        function updateNavigationButtons() {
+            document.getElementById('prev-btn').disabled = currentQuestion === 0;
+            document.getElementById('next-btn').disabled = answers[currentQuestion] === undefined;
+            
+            if (currentQuestion === questions.length - 1) {
+                document.getElementById('next-btn').textContent = '결과 보기';
+            } else {
+                document.getElementById('next-btn').textContent = '다음';
+            }
+        }
+
+        // 결과 계산
+        function calculateResult() {
+            // 점수 초기화
+            for (let i = 1; i <= 9; i++) {
+                scores[i] = 0;
+            }
+            
+            // 각 답변에 따른 점수 계산
+            answers.forEach((answerIndex, questionIndex) => {
+                const question = questions[questionIndex];
+                const selectedOption = question.options[answerIndex];
+                
+                Object.keys(selectedOption.weights).forEach(type => {
+                    scores[parseInt(type)] += selectedOption.weights[type];
+                });
+            });
+            
+            // 최고 점수 타입 찾기
+            let maxScore = 0;
+            let primaryType = 1;
+            
+            Object.keys(scores).forEach(type => {
+                if (scores[type] > maxScore) {
+                    maxScore = scores[type];
+                    primaryType = parseInt(type);
+                }
+            });
+            
+            // 날개 타입 결정 (인접한 타입 중 점수가 높은 것)
+            const adjacentTypes = getAdjacentTypes(primaryType);
+            let wingType = adjacentTypes[0];
+            
+            if (scores[adjacentTypes[1]] > scores[adjacentTypes[0]]) {
+                wingType = adjacentTypes[1];
+            }
+            
+            const resultKey = `${primaryType}w${wingType}`;
+            showResult(resultKey);
+        }
+
+        // 인접 타입 반환
+        function getAdjacentTypes(type) {
+            const adjacent = {
+                1: [9, 2],
+                2: [1, 3],
+                3: [2, 4],
+                4: [3, 5],
+                5: [4, 6],
+                6: [5, 7],
+                7: [6, 8],
+                8: [7, 9],
+                9: [8, 1]
+            };
+            return adjacent[type];
+        }
+
+        // 결과 표시
+        function showResult(resultKey) {
+            const result = results[resultKey];
+            
+            document.getElementById('test-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            
+            // 결과 데이터 표시
+            document.getElementById('result-title').textContent = result.title;
+            document.getElementById('result-type').textContent = result.type;
+            document.getElementById('result-description').textContent = result.description;
+            
+            // 향수 이미지 스타일링
+            const perfumeImage = document.getElementById('perfume-image');
+            perfumeImage.style.setProperty('--primary-color', result.colors[0]);
+            perfumeImage.style.setProperty('--secondary-color', result.colors[1]);
+            
+            // 향 노트 표시
+            const notesList = document.getElementById('notes-list');
+            notesList.innerHTML = '';
+            result.notes.forEach(note => {
+                const noteTag = document.createElement('span');
+                noteTag.className = 'note-tag';
+                noteTag.textContent = note;
+                noteTag.style.setProperty('--primary-color', result.colors[0]);
+                noteTag.style.setProperty('--secondary-color', result.colors[1]);
+                notesList.appendChild(noteTag);
+            });
+            
+            // 결과 저장을 위한 전역 변수
+            window.currentResult = {
+                type: resultKey,
+                title: result.title,
+                description: result.description
+            };
+        }
+
+        // 결과 저장 (구글 스프레드시트 연동)
+        function saveResult() {
+            const userName = document.getElementById('user-name').value.trim();
+            
+            if (!userName) {
+                alert('이름을 입력해주세요.');
+                return;
+            }
+            
+            const resultData = {
+                timestamp: new Date().toISOString(),
+                name: userName,
+                result_type: window.currentResult.type,
+                result_title: window.currentResult.title,
+                result_description: window.currentResult.description
+            };
+            
+            // 구글 스프레드시트 웹앱 URL (사용자가 설정해야 함)
+            const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE';
+            
+            // 실제 구글 스프레드시트 연동 코드
+            /*
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(resultData)
+            })
+            .then(() => {
+                alert('결과가 성공적으로 저장되었습니다!');
+                document.getElementById('user-name').value = '';
+            })
+            .catch(error => {
+                console.error('저장 오류:', error);
+                alert('저장 중 오류가 발생했습니다. 다시 시도해주세요.');
+            });
+            */
+            
+            // 데모용 메시지
+            alert(`${userName}님의 결과가 저장되었습니다!\n결과: ${window.currentResult.title}`);
+            document.getElementById('user-name').value = '';
+        }
+
+        // 테스트 다시 시작
+        function restartTest() {
+            currentQuestion = 0;
+            answers = [];
+            scores = {};
+            
+            for (let i = 1; i <= 9; i++) {
+                scores[i] = 0;
+            }
+            
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('intro-screen').classList.remove('hidden');
+        }
+
+        // 페이지 로드 시 초기화
+        window.onload = init;
+    </script>
 </body>
+
 </html>
